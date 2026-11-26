@@ -46,7 +46,7 @@ targets:
         NSSpeechRecognitionUsageDescription: 需要把语音识别成文字，用于语音输入提示词、通知内容和任务名称。
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.taskpilot.app
+        PRODUCT_BUNDLE_IDENTIFIER: app.otter4980.chickpea4593
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: NO
         SUPPORTS_MACCATALYST: NO

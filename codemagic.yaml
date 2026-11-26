@@ -1,28 +1,31 @@
 # Codemagic 构建配置
 #
 # 两个工作流：
-#   enterprise-ipa  → 用你自己的企业证书签好名的 ipa，直接可分发（你要的是这个）
-#   unsigned-ipa    → 未签名 ipa，留给你自己的签名软件用
+#   adhoc-ipa     → 用你自己的 Ad Hoc 证书签好名的 ipa（你手上的描述文件就是这个类型）
+#   unsigned-ipa  → 未签名 ipa，留给你自己的签名软件用
 #
-# 前置（企业证书工作流，只需要配一次）：
+# 前置（签名工作流，只需要配一次）：
 #   Codemagic → Team settings → codemagic.yaml settings → Code signing identities
 #   → iOS certificates         上传你的 .p12（有密码就填密码）
-#   → iOS provisioning profiles 上传你的企业 .mobileprovision
-#   然后本文件里 ios_signing 的 distribution_type: enterprise 会自动匹配到它们。
+#   → iOS provisioning profiles 上传你的 .mobileprovision
+#
+# ⚠️ 这个描述文件是 Ad Hoc 类型，ProvisionedDevices 里只有一台设备：
+#    00008150-000C15EE0CA1401C
+#    所以签出来的包只能装那台 iPhone，别人手机装不上。
+#    它的 App ID 是具体的 QZ4F9UXK6V.app.otter4980.chickpea4593，
+#    因此 App 的 bundle id 必须写成 app.otter4980.chickpea4593，不能自定义。
 
 workflows:
-  enterprise-ipa:
-    name: 企业证书签名 IPA
+  adhoc-ipa:
+    name: Ad Hoc 签名 IPA
     instance_type: mac_mini_m2
     max_build_duration: 60
     environment:
       ios_signing:
-        distribution_type: enterprise
-        # ⚠️ 必须改成你企业描述文件对应的 bundle id
-        bundle_identifier: com.taskpilot.app
+        distribution_type: ad_hoc
+        bundle_identifier: app.otter4980.chickpea4593
       vars:
-        # ⚠️ 和上面 bundle_identifier 保持一致
-        BUNDLE_ID: "com.taskpilot.app"
+        BUNDLE_ID: "app.otter4980.chickpea4593"
         XCODE_PROJECT: "TaskPilot.xcodeproj"
         XCODE_SCHEME: "TaskPilot"
         APP_NAME: "TaskPilot"
@@ -60,7 +63,6 @@ workflows:
           APP=$(ls -d /tmp/ipa_check/Payload/*.app | head -n 1)
           echo "Bundle ID: $(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP/Info.plist")"
           echo "描述文件: $(test -f "$APP/embedded.mobileprovision" && echo 已嵌入 || echo 缺失)"
-          security cms -D -i "$APP/embedded.mobileprovision" 2>/dev/null | grep -A1 -E 'ProvisionsAllDevices|ExpirationDate' || true
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
@@ -71,7 +73,7 @@ workflows:
     max_build_duration: 60
     environment:
       vars:
-        BUNDLE_ID: "com.taskpilot.app"
+        BUNDLE_ID: "app.otter4980.chickpea4593"
         XCODE_PROJECT: "TaskPilot.xcodeproj"
         XCODE_SCHEME: "TaskPilot"
         APP_NAME: "TaskPilot"
@@ -118,10 +120,3 @@ workflows:
     artifacts:
       - build/*.ipa
       - build/*.xcarchive
-
-    # 想跳过签名、直接传 TestFlight 时，取消下面注释并配好三个环境变量。
-    # publishing:
-    #   app_store_connect:
-    #     api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-    #     key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
-    #     issuer_id: $APP_STORE_CONNECT_ISSUER_ID

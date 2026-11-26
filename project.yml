@@ -5,8 +5,17 @@ options:
   deploymentTarget:
     iOS: "16.0"
   createIntermediateGroups: true
-  xcodeVersion: "15.0"
   groupSortPosition: top
+
+schemes:
+  TaskPilot:
+    build:
+      targets:
+        TaskPilot: all
+    run:
+      config: Debug
+    archive:
+      config: Release
 
 settings:
   base:

@@ -1,0 +1,52 @@
+name: TaskPilot
+
+options:
+  bundleIdPrefix: com.taskpilot
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+  xcodeVersion: "15.0"
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+
+targets:
+  TaskPilot:
+    type: application
+    platform: iOS
+    sources:
+      - path: TaskPilot
+        excludes:
+          - "Info.plist"
+    info:
+      path: TaskPilot/Info.plist
+      properties:
+        CFBundleIdentifier: $(PRODUCT_BUNDLE_IDENTIFIER)
+        CFBundleExecutable: $(EXECUTABLE_NAME)
+        CFBundleName: $(PRODUCT_NAME)
+        CFBundlePackageType: APPL
+        CFBundleDisplayName: TaskPilot
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIBackgroundModes:
+          - fetch
+        BGTaskSchedulerPermittedIdentifiers:
+          - $(PRODUCT_BUNDLE_IDENTIFIER).refresh
+        ITSAppUsesNonExemptEncryption: false
+        NSMicrophoneUsageDescription: 需要用麦克风把你说的话实时转成文字，填进任务的输入框。
+        NSSpeechRecognitionUsageDescription: 需要把语音识别成文字，用于语音输入提示词、通知内容和任务名称。
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.taskpilot.app
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: NO
+        SUPPORTS_MACCATALYST: NO
